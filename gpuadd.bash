@@ -16,7 +16,9 @@ echo "vfio_virqfd" >>/etc/modules
 cat /etc/modules
 
 echo "options vfio_iommu_type1 allow_unsafe_interrupts=1" >/etc/modprobe.d/iommu_unsafe_interrupts.conf
-echo "options kvm ignore_msrs=1" >/etc/modprobe.d/kvm.conf
+# echo "options kvm ignore_msrs=1" >/etc/modprobe.d/kvm.conf
+# remove warning messages in your 'dmesg' system log
+echo "options kvm ignore_msrs=1 report_ignored_msrs=0" >/etc/modprobe.d/kvm.conf
 >/etc/modprobe.d/blacklist.conf
 echo "blacklist nouveau" >>/etc/modprobe.d/blacklist.conf
 echo "blacklist nvidia" >>/etc/modprobe.d/blacklist.conf
