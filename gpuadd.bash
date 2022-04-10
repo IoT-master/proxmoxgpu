@@ -2,9 +2,9 @@
 
 cp /etc/default/grub /etc/default/grub.bak
 if [ $(lscpu | grep AMD | wc -l) -ge 1 ]; then
-    sed -iE 's|GRUB_CMDLINE_LINUX_DEFAULT="[A-Za-z]*"|GRUB_CMDLINE_LINUX_DEFAULT="quiet amd_iommu=on iommu=pt pcie_acs_override=downstream,multifunction nofb nomodeset video=vesafb:off,efifb:off"|' /etc/default/grub.bak
+    sed -iE 's|GRUB_CMDLINE_LINUX_DEFAULT="[A-Za-z]*"|GRUB_CMDLINE_LINUX_DEFAULT="quiet amd_iommu=on iommu=pt pcie_acs_override=downstream,multifunction nofb nomodeset video=vesafb:off,efifb:off"|' /etc/default/grub
 else
-    sed -iE 's|GRUB_CMDLINE_LINUX_DEFAULT="[A-Za-z]*"|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on iommu=pt pcie_acs_override=downstream,multifunction nofb nomodeset video=vesafb:off,efifb:off"|' /etc/default/grub.bak
+    sed -iE 's|GRUB_CMDLINE_LINUX_DEFAULT="[A-Za-z]*"|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on iommu=pt pcie_acs_override=downstream,multifunction nofb nomodeset video=vesafb:off,efifb:off"|' /etc/default/grub
 fi
 update-grub
 
@@ -25,6 +25,7 @@ echo "blacklist nvidiafb" >>/etc/modprobe.d/blacklist.conf
 deviceid=$(lspci | grep "VGA compatible controller:" | cut -d " " -f 1)
 >/etc/modprobe.d/vfio.conf
 while read row; do
-    cut -d " " -f 3 <<<"$row" | lspci -n -s "$(cat -)" | cut -d " " -f 3 | echo "options vfio-pci ids=$(cat -) disable_vga=1" >>/etc/modprobe.d/vfio.conf
+    cut -d "." -f 1 <<<"$row" | lspci -n -s $(cat -) | cut -d " " -f 3 | echo "options vfio-pci ids=$(paste -s -d ',') disable_vg1=1" >>/etc/modprobe.d/vfio.conf
+    # cut -d " " -f 3 <<<"$row" | lspci -n -s "$(cat -)" | cut -d " " -f 3 | echo "options vfio-pci ids=$(cat -) disable_vga=1" >>/etc/modprobe.d/vfio.conf
 done <<<"$deviceid"
 update-initramfs -u
